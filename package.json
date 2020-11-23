@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "homepage": "https://xzllbfs.github.io/realworld-nuxtjs/",
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
