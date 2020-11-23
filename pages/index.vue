@@ -60,55 +60,14 @@
             </ul>
           </div>
 
-          <div class="article-preview" v-if="articles.length === 0">No articles are here...yet.</div>
-          <div
-            class="article-preview"
-            v-for="article in articles"
-            :key="article.slug"
-          >
-            <div class="article-meta">
-              <nuxt-link :to="{
-                name: 'profile-username',
-                params: article.author
-              }">
-                <img :src="article.author.image" />
-              </nuxt-link>
-              <div class="info">
-                <nuxt-link class="author" :to="{
-                  name: 'profile-username',
-                  params: article.author
-                }">
-                  {{ article.author.username }}
-                </nuxt-link>
-                <span class="date">{{ article.createdAt | date('MMM DD, YYYY') }}</span>
-              </div>
-              <button
-                class="btn btn-outline-primary btn-sm pull-xs-right"
-                :class="{
-                  active: article.favorited
-                }"
-                @click="onFavorite(article)"
-                :disabled="article.favoriteDisabled"
-              >
-                <i class="ion-heart"></i> {{ article.favoritesCount }}
-              </button>
-            </div>
-            <nuxt-link
-              class="preview-link"
-              :to="{
-                name: 'article-slug',
-                params: {
-                  slug: article.slug
-                }
-              }"
-            >
-              <h1>{{ article.title }}</h1>
-              <p>{{ article.description }}</p>
-              <span>Read more...</span>
-            </nuxt-link>
-          </div>
+          <articles-preview
+            :articles="articles"
+            :articlesCount="articlesCount"
+            :limit="limit"
+            :page="page"
+            :tab="tab"
+          ></articles-preview>
 
-          <!-- 分页列表 -->
           <nav>
             <ul class="pagination">
               <li
@@ -133,7 +92,6 @@
               </li>
             </ul>
           </nav>
-          <!-- /分页列表 -->
 
         </div>
 
@@ -173,8 +131,10 @@ import {
 } from '@/api/article'
 import { getTags } from '@/api/tag'
 import { mapState } from 'vuex'
+import articlesPreview from '../components/articles-preview.vue'
 
 export default {
+  components: { articlesPreview },
   name: 'HomeIndex',
   layout: 'default',
   async asyncData ({ query }) {

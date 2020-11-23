@@ -5,22 +5,22 @@
       <div class="container">
         <div class="row">
           <div class="col-xs-12 col-md-10 offset-md-1">
-            <img :src="author.image" class="user-img" />
-            <h4>{{ author.username }}</h4>
+            <img :src="profile.image" class="user-img" />
+            <h4>{{ profile.username }}</h4>
             <p>
-              {{ author.bio }}
+              {{ profile.bio }}
             </p>
             <button
               class="btn btn-sm btn-outline-secondary action-btn"
               :class="{
-                active: author.following
+                active: profile.following
               }"
-              @click="onFollow(author)"
-              :disabled="author.followDisabled"
+              @click="onFollow(profile)"
+              :disabled="profile.followDisabled"
             >
               <i class="ion-plus-round"></i>
               &nbsp;
-              Follow {{ author.username }}
+              {{ profile.following ? 'Unfollow' : 'Follow' }} {{ profile.username }}
             </button>
           </div>
 
@@ -35,55 +35,75 @@
           <div class="articles-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <a class="nav-link active" href="">My Articles</a>
+                <nuxt-link
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'my_articles'
+                  }"
+                  exact
+                  :to="{
+                    name: 'profile-username',
+                    params: {
+                      username: profile.username
+                    }
+                  }"
+                >我的文章</nuxt-link>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="">Favorited Articles</a>
+                <nuxt-link
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'favorited_articles'
+                  }"
+                  exact
+                  :to="{
+                    name: 'profile-username',
+                    params: {
+                      username: profile.username
+                    },
+                    query: {
+                      tab: 'favorited_articles'
+                    }
+                  }"
+                >我喜欢的文章</nuxt-link>
               </li>
             </ul>
           </div>
 
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
-              <div class="info">
-                <a href="" class="author">Eric Simons</a>
-                <span class="date">January 20th</span>
-              </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 29
-              </button>
-            </div>
-            <a href="" class="preview-link">
-              <h1>How to build webapps that scale</h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-            </a>
-          </div>
+          <articles-preview
+            :articles="articles"
+            :articlesCount="articlesCount"
+            :limit="limit"
+            :page="page"
+            :tab="tab"
+          ></articles-preview>
 
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/N4VcUeJ.jpg" /></a>
-              <div class="info">
-                <a href="" class="author">Albert Pai</a>
-                <span class="date">January 20th</span>
-              </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 32
-              </button>
-            </div>
-            <a href="" class="preview-link">
-              <h1>The song you won't ever stop singing. No matter how hard you try.</h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-              <ul class="tag-list">
-                <li class="tag-default tag-pill tag-outline">Music</li>
-                <li class="tag-default tag-pill tag-outline">Song</li>
-              </ul>
-            </a>
-          </div>
-
-
+          <nav>
+            <ul class="pagination">
+              <li
+                class="page-item"
+                :class="{
+                  active: item === page
+                }"
+                v-for="item in totalPage"
+                :key="item"
+              >
+                <nuxt-link
+                  class="page-link"
+                  :to="{
+                    name: 'profile-username',
+                    params: {
+                      username: profile.username
+                    },
+                    query: {
+                      page: item,
+                      tab: tab
+                    }
+                  }"
+                >{{ item }}</nuxt-link>
+              </li>
+            </ul>
+          </nav>
         </div>
 
       </div>
@@ -95,30 +115,65 @@
 <script>
 import {
   followUser,
-  unfollowUser
+  unfollowUser,
+  getUserProfiles
 } from '@/api/user'
+import {
+  getArticles,
+  getYourFeedArticles
+} from '@/api/article'
+import articlesPreview from '../../components/articles-preview.vue'
 
 export default {
+  components: { articlesPreview },
   middleware: 'authenticated',
   name: 'profile-username',
+  async asyncData ({ params, query }) {
+    const page = Number.parseInt(query.page|| 1)
+    const limit = 20
+    const tab = query.tab || 'my_articles'
+
+    const loadArticles = tab === 'my_articles'
+      ? getArticles
+      : getYourFeedArticles
+    const [ articleRes, profileRes ] = await Promise.all([
+      loadArticles({
+        limit,
+        offset: (page - 1) * limit,
+        author: params.username
+      }),
+      getUserProfiles(params.username)
+    ])
+    const { articles, articlesCount } = articleRes.data
+    const { profile } = profileRes.data
+    return {
+      articles,
+      articlesCount,
+      profile,
+      page,
+      limit,
+      tab
+    }
+  },
+  watchQuery: ['page', 'tag', 'tab'],
   computed: {
-    author () {
-      return this.$route.params
+    totalPage () {
+      return Math.ceil(this.articlesCount / this.limit)
     }
   },
   methods: {
-    async onFollow (author) {
-      author.followDisabled = true
-      if (author.favorited) {
-        // 取消点赞
-        await unfollowUser(author.username)
-        author.following = false
+    async onFollow (profile) {
+      profile.followDisabled = true
+      if (profile.following) {
+        // 取消关注
+        await unfollowUser(profile.username)
+        profile.following = false
       } else {
-        // 添加点赞
-        await followUser(author.username)
-        author.following = true
+        // 添加关注
+        await followUser(profile.username)
+        profile.following = true
       }
-      author.followDisabled = false
+      profile.followDisabled = false
     }
   }
 }
