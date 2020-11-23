@@ -33,7 +33,6 @@ import ArticleComments from '@/components/article-comments'
 export default {
   name: 'ArticleIndex',
   async asyncData ({ params }) {
-    console.log(params.slug)
     const { data } = await getArticle(params.slug)
     const { article } = data
     const md = new MarkdownIt()

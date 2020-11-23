@@ -60,6 +60,7 @@
             </ul>
           </div>
 
+          <div class="article-preview" v-if="articles.length === 0">No articles are here...yet.</div>
           <div
             class="article-preview"
             v-for="article in articles"
@@ -68,18 +69,14 @@
             <div class="article-meta">
               <nuxt-link :to="{
                 name: 'profile-username',
-                params: {
-                  username: article.author.username
-                }
+                params: article.author
               }">
                 <img :src="article.author.image" />
               </nuxt-link>
               <div class="info">
                 <nuxt-link class="author" :to="{
                   name: 'profile-username',
-                  params: {
-                    username: article.author.username
-                  }
+                  params: article.author
                 }">
                   {{ article.author.username }}
                 </nuxt-link>

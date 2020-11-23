@@ -4,17 +4,23 @@
     <div class="user-info">
       <div class="container">
         <div class="row">
-
           <div class="col-xs-12 col-md-10 offset-md-1">
-            <img src="http://i.imgur.com/Qr71crq.jpg" class="user-img" />
-            <h4>Eric Simons</h4>
+            <img :src="author.image" class="user-img" />
+            <h4>{{ author.username }}</h4>
             <p>
-              Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda looks like Peeta from the Hunger Games
+              {{ author.bio }}
             </p>
-            <button class="btn btn-sm btn-outline-secondary action-btn">
+            <button
+              class="btn btn-sm btn-outline-secondary action-btn"
+              :class="{
+                active: author.following
+              }"
+              @click="onFollow(author)"
+              :disabled="author.followDisabled"
+            >
               <i class="ion-plus-round"></i>
               &nbsp;
-              Follow Eric Simons
+              Follow {{ author.username }}
             </button>
           </div>
 
@@ -87,9 +93,34 @@
 </template>
 
 <script>
+import {
+  followUser,
+  unfollowUser
+} from '@/api/user'
+
 export default {
   middleware: 'authenticated',
-  name: 'profile-username'
+  name: 'profile-username',
+  computed: {
+    author () {
+      return this.$route.params
+    }
+  },
+  methods: {
+    async onFollow (author) {
+      author.followDisabled = true
+      if (author.favorited) {
+        // 取消点赞
+        await unfollowUser(author.username)
+        author.following = false
+      } else {
+        // 添加点赞
+        await followUser(author.username)
+        author.following = true
+      }
+      author.followDisabled = false
+    }
+  }
 }
 </script>
 

@@ -18,3 +18,19 @@ export const register = data => {
     data
   })
 }
+
+// 关注用户
+export const followUser = username => {
+  return request({
+    method: 'POST',
+    url: `/api/profiles/${username}/follow`
+  })
+}
+
+// 取消关注
+export const unfollowUser = username => {
+  return request({
+    method: 'POST',
+    url: `/api/profiles/${username}/follow`
+  })
+}
