@@ -10,7 +10,19 @@
             <p>
               {{ profile.bio }}
             </p>
+            <nuxt-link
+              class="btn btn-sm btn-outline-secondary action-btn"
+              v-if="profile.username === user.username"
+              :to="{
+                name: 'settings'
+              }"
+            >
+              <i class="ion-gear-a"></i>
+              &nbsp;
+              编辑资料设置
+            </nuxt-link>
             <button
+              v-else
               class="btn btn-sm btn-outline-secondary action-btn"
               :class="{
                 active: profile.following
@@ -20,7 +32,7 @@
             >
               <i class="ion-plus-round"></i>
               &nbsp;
-              {{ profile.following ? 'Unfollow' : 'Follow' }} {{ profile.username }}
+              {{ profile.following ? '取消关注' : '关注' }} {{ profile.username }}
             </button>
           </div>
 
@@ -122,7 +134,8 @@ import {
   getArticles,
   getYourFeedArticles
 } from '@/api/article'
-import articlesPreview from '../../components/articles-preview.vue'
+import { mapState } from 'vuex'
+import articlesPreview from '@/components/articles-preview.vue'
 
 export default {
   components: { articlesPreview },
@@ -130,7 +143,7 @@ export default {
   name: 'profile-username',
   async asyncData ({ params, query }) {
     const page = Number.parseInt(query.page|| 1)
-    const limit = 20
+    const limit = 10
     const tab = query.tab || 'my_articles'
 
     const loadArticles = tab === 'my_articles'
@@ -157,6 +170,7 @@ export default {
   },
   watchQuery: ['page', 'tag', 'tab'],
   computed: {
+    ...mapState(['user']),
     totalPage () {
       return Math.ceil(this.articlesCount / this.limit)
     }

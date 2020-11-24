@@ -54,13 +54,10 @@ export default {
   methods: {
     async onSubmit () {
       const user = this.$refs.loginForm.user
-      console.log('注册信息', user)
       try {
         // 提交表单请求登录
         const { data } = await register({ user })
 
-        console.log(data)
-        // TODO: 保存用户的登录状态
         this.$store.commit('setUser', data.user)
 
         // 为了防止刷新页面数据丢失，我们需要把数据持久化
