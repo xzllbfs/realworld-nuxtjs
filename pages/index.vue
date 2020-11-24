@@ -3,7 +3,7 @@
 
     <div class="banner">
       <div class="container">
-        <h1 class="logo-font">首页</h1>
+        <h1 class="logo-font">Conduit</h1>
         <p>A place to share your knowledge.</p>
       </div>
     </div>
@@ -27,7 +27,7 @@
                       tab: 'your_feed'
                     }
                   }"
-                >你关注的</nuxt-link>
+                >你的文章</nuxt-link>
               </li>
               <li class="nav-item">
                 <nuxt-link
@@ -39,7 +39,7 @@
                   :to="{
                     name: 'index'
                   }"
-                >全部关注</nuxt-link>
+                >全部文章</nuxt-link>
               </li>
               <li v-if="tag" class="nav-item">
                 <nuxt-link
@@ -125,9 +125,7 @@
 <script>
 import {
   getArticles,
-  getYourFeedArticles,
-  addFavorite,
-  deleteFavorite
+  getYourFeedArticles
 } from '@/api/article'
 import { getTags } from '@/api/tag'
 import { mapState } from 'vuex'
@@ -139,7 +137,7 @@ export default {
   layout: 'default',
   async asyncData ({ query }) {
     const page = Number.parseInt(query.page|| 1)
-    const limit = 20
+    const limit = 10
     const tab = query.tab || 'global_feed'
     const tag = query.tag
 
@@ -175,24 +173,6 @@ export default {
     ...mapState(['user']),
     totalPage () {
       return Math.ceil(this.articlesCount / this.limit)
-    }
-  },
-
-  methods: {
-    async onFavorite (article) {
-      article.favoriteDisabled = true
-      if (article.favorited) {
-        // 取消点赞
-        await deleteFavorite(article.slug)
-        article.favorited = false
-        article.favoritesCount += -1
-      } else {
-        // 添加点赞
-        await addFavorite(article.slug)
-        article.favorited = true
-        article.favoritesCount += 1
-      }
-      article.favoriteDisabled = false
     }
   }
 }

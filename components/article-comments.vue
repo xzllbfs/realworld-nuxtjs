@@ -11,7 +11,8 @@
         </button>
       </div>
     </form>
-
+    111111111
+    {{ comments }}
     <div
       class="card"
       v-for="comment in comments"

@@ -54,12 +54,34 @@
 </template>
 
 <script>
+import {
+  addFavorite,
+  deleteFavorite
+} from '@/api/article'
+
 export default {
   name: 'ArticlesPreview',
   props: {
     articles: {
       type: Array,
       required: true
+    }
+  },
+  methods: {
+    async onFavorite (article) {
+      article.favoriteDisabled = true
+      if (article.favorited) {
+        // 取消点赞
+        await deleteFavorite(article.slug)
+        article.favorited = false
+        article.favoritesCount += -1
+      } else {
+        // 添加点赞
+        await addFavorite(article.slug)
+        article.favorited = true
+        article.favoritesCount += 1
+      }
+      article.favoriteDisabled = false
     }
   }
 }

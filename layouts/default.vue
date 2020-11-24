@@ -7,7 +7,7 @@
         <nuxt-link
           class="navbar-brand"
           to="/"
-        >Home</nuxt-link>
+        >Conduit</nuxt-link>
         <ul class="nav navbar-nav pull-xs-right">
           <li class="nav-item">
             <!-- exact 精确匹配高亮 -->
@@ -15,7 +15,7 @@
               class="nav-link"
               to="/"
               exact
-            >Home</nuxt-link>
+            >首页</nuxt-link>
           </li>
           <template v-if="user">
             <li class="nav-item">
@@ -23,7 +23,7 @@
                 class="nav-link"
                 to="/editor"
               >
-                <i class="ion-compose"></i>&nbsp;New Post
+                <i class="ion-compose"></i>&nbsp;写文章
               </nuxt-link>
             </li>
             <li class="nav-item">
@@ -31,11 +31,11 @@
                 class="nav-link"
                 to="/settings"
               >
-                <i class="ion-gear-a"></i>&nbsp;Settings
+                <i class="ion-gear-a"></i>&nbsp;设置
               </nuxt-link>
             </li>
             <li class="nav-item">
-              <nuxt-link class="nav-link" to="/profile/123">
+              <nuxt-link class="nav-link" :to="`/profile/${user.username}`">
                 <img
                   class="user-pic"
                   :src="user.image"
