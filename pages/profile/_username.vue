@@ -77,7 +77,7 @@
                       tab: 'favorited_articles'
                     }
                   }"
-                >我喜欢的文章</nuxt-link>
+                >我关注的</nuxt-link>
               </li>
             </ul>
           </div>

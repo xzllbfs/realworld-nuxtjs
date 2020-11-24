@@ -68,7 +68,6 @@ export default {
         // 跳转到首页
         this.$router.push('/')
       } catch (err) {
-        // console.log('请求失败', err)
         this.errors = err.response.data.errors
       }
     }

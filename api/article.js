@@ -59,10 +59,20 @@ export const createArticle = data => {
   })
 }
 
+// 更新文章
 export const updateArticle = (slug, article) => {
   return request({
     method: 'PUT',
     url: `/api/articles/${slug}`,
     data: { article }
+  })
+}
+
+// 发表评论
+export const addComment = (slug, comment) => {
+  return request({
+    method: 'POST',
+    url: `/api/articles/${slug}/comments`,
+    data: { comment }
   })
 }

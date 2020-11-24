@@ -53,7 +53,6 @@
 
 <script>
 import { createArticle, updateArticle, getArticle } from '@/api/article'
-import MarkdownIt from 'markdown-it'
 
 export default {
   // 在路由匹配组件渲染之前会先执行中间件处理
@@ -63,9 +62,6 @@ export default {
     if (!params.slug) return
     const { data } = await getArticle(params.slug)
     const { article } = data
-    // console.log(article.body)
-    // const md = new MarkdownIt()
-    // article.body = md.render(article.body)
     return {
       article
     }

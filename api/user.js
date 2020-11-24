@@ -30,7 +30,7 @@ export const followUser = username => {
 // 取消关注
 export const unfollowUser = username => {
   return request({
-    method: 'POST',
+    method: 'DELETE',
     url: `/api/profiles/${username}/follow`
   })
 }

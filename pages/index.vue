@@ -27,7 +27,7 @@
                       tab: 'your_feed'
                     }
                   }"
-                >你的文章</nuxt-link>
+                >你关注的</nuxt-link>
               </li>
               <li class="nav-item">
                 <nuxt-link
